@@ -611,7 +611,7 @@ deploy () {
 
 	local modules=()
 
-	if [[ "${modules[*]}" =~ "Core" ]]; then
+	if [[ "${_MODULES[*]}" =~ "Core" ]]; then
 		modules=("${_MODULES[@]}")
 	else
 		modules+=("Core")
