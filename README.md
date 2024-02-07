@@ -53,15 +53,33 @@ Produces this output:
 executable: /path/to/user/repo/built/binary.exe
 module: Core  as: Qt6Core
 copy: Qt6Core.dll  to: built/Qt6Core.dll
-  copy file from "/path/to/qt/lib/Qt6Core.dll" to "/path/to/user/repo/built/Qt6Core.dll"
-  copy file from "/path/to/mingw64/bin/libharfbuzz-0.dll" to "/path/to/user/repo/built/libharfbuzz-0.dll"
-  copy file from "/path/to/mingw64/bin/libiconv-2.dll" to "/path/to/user/repo/built/libintl-8.dll"
-  copy file from "/path/to/mingw64/bin/libintl-8.dll" to "/path/to/user/repo/built/libintl-8.dll"
+  copy file from "/path/to/qt/bin/Qt6Core.dll" to "/path/to/user/repo/built/Qt6Core.dll"
+dependency: libpcre2-16-0.dll
+  copy file from "/path/to/mingw64/bin/libpcre2-16-0.dll" to "/path/to/user/repo/built/libpcre2-16-0.dll"
+dependency: libssp-0.dll
+  copy file from "/path/to/mingw64/bin/libssp-0.dll" to "/path/to/user/repo/built/libssp-0.dll"
+dependency: libstdc++-6.dll
+  copy file from "/path/to/mingw64/bin/libstdc++-6.dll" to "/path/to/user/repo/built/libstdc++-6.dll"
+dependency: libwinpthread-1.dll
   copy file from "/path/to/mingw64/bin/libwinpthread-1.dll" to "/path/to/user/repo/built/libwinpthread-1.dll"
+dependency: libzstd.dll
+  copy file from "/path/to/mingw64/bin/libzstd.dll" to "/path/to/user/repo/built/libzstd.dll"
+dependency: zlib1.dll
+  copy file from "/path/to/mingw64/bin/zlib1.dll" to "/path/to/user/repo/built/zlib1.dll"
+dependency: libgcc_s_seh-1.dll
+  copy file from "/path/to/mingw64/bin/libgcc_s_seh-1.dll" to "/path/to/user/repo/built/libgcc_s_seh-1.dll"
+module: Gui  as: Qt6Gui
+no overwrite: Qt6Gui.dll  already at: built/Qt6Gui.dll
+dependency: libbrotlicommon.dll
+no overwrite: libbrotlicommon.dll  already at: built/libbrotlicommon.dll
+dependency: libbrotlidec.dll
+no overwrite: libbrotlidec.dll  already at: built/libbrotlidec.dll
+dependency: libbz2-1.dll
+no overwrite: libbz2-1.dll  already at: built/libbz2-1.dll
 [...]
 plugin: platforms
 copy: platforms  to: built/platforms
-  copy file from "/path/to/qt/plugins/platforms" to "/path/to/user/repo/built/platforms"
+  copy directory from "/path/to/qt/plugins/platforms" to "/path/to/user/repo/built/platforms"
 [...]
 ```
 

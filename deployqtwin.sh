@@ -252,6 +252,43 @@ plugins_path () {
 	_PLUGINS_PATH="$plugins_path"
 }
 
+recurse_dependency () {
+	local path="$1"
+
+	if [[ "$_VERBOSE" == true ]]; then
+		local filename=$(basename "$path")
+		printf "dependency: %s\n" "$filename"
+	fi
+
+	if [[ ! -e "$path" ]]; then
+		error "$(printf "Error dependency file not found: %s\n" "$path")"
+
+		return 1
+	fi
+
+	local srcpath=$(path_source "$path")
+	local dstpath=$(path_target "$path")
+
+	local overwrite=false
+
+	if [[ "$_FORCE_OVERWRITE" == true || ! -e "$dstpath" ]]; then
+		overwrite=true
+	elif [[ "$_VERBOSE" == true ]]; then
+		local srcfilename=$(basename "$srcpath")
+		local dstfilename=$(relname "$dstpath")
+		printf "no overwrite: %s  already at: %s\n" "$srcfilename" "$dstfilename"
+	fi
+
+	if [[ "$overwrite" == true ]]; then
+		copy_dependency "$srcpath" "$dstpath"
+
+		if [[ ! "$_VERBOSE" ]]; then
+			local relpath=$(relname "$dstpath")
+			echo "$relpath\n"
+		fi
+	fi
+}
+
 copy_dependency () {
 	local srcpath="$1"
 	local dstpath="$2"
@@ -266,14 +303,14 @@ copy_dependency () {
 		if [[ -d "$srcpath" ]]; then
 			if [[ "$_FORCE_OVERWRITE" == true ]]; then
 				cp -Rf "$srcpath" "$dstpath"
-			else
+			elif [[ ! -e "$dstpath" ]]; then
 				cp -R "$srcpath" "$dstpath"
 			fi
 		else
 			if [[ "$_FORCE_OVERWRITE" == true ]]; then
-				cp "$srcpath" "$dstpath"
-			else
 				cp -f "$srcpath" "$dstpath"
+			elif [[ ! -e "$dstpath" ]]; then
+				cp "$srcpath" "$dstpath"
 			fi
 		fi
 	elif [[ "$_VERBOSE" == true ]]; then
@@ -309,16 +346,42 @@ deploy_module () {
 	local srcpath=$(path_source "$path")
 	local dstpath=$(path_target "$path")
 
-	copy_dependency "$srcpath" "$dstpath"
+	local overwrite=false
 
-	if [[ ! "$_VERBOSE" ]]; then
-		local relpath=$(relname "$dstpath")
-		echo "$relpath\n"
+	if [[ "$_FORCE_OVERWRITE" == true || ! -e "$dstpath" ]]; then
+		overwrite=true
+	elif [[ "$_VERBOSE" == true ]]; then
+		local srcfilename=$(basename "$srcpath")
+		local dstfilename=$(relname "$dstpath")
+		printf "no overwrite: %s  already at: %s\n" "$srcfilename" "$dstfilename"
+	fi
+
+	if [[ "$overwrite" == true ]]; then
+		copy_dependency "$srcpath" "$dstpath"
+
+		if [[ ! "$_VERBOSE" ]]; then
+			local relpath=$(relname "$dstpath")
+			echo "$relpath\n"
+		fi
 	fi
 
 	local deps=()
 
 	if [[ "$module" == "Core" ]]; then
+		deps=(
+			"libpcre2-16-0"
+			"libssp-0"
+			"libstdc++-6"
+			"libwinpthread-1"
+			"libzstd"
+			"zlib1"
+		)
+		if [[ "$_SYSTEM" == "MINGW64" ]]; then
+			deps+=("libgcc_s_seh-1")
+		elif [[ "$_SYSTEM" == "MINGW32" ]]; then
+			deps+=("libgcc_s_dw2-1")
+		fi
+	elif [[ "$module" == "Gui" ]]; then
 		deps=(
 			"libbrotlicommon"
 			"libbrotlidec"
@@ -329,22 +392,15 @@ deploy_module () {
 			"libharfbuzz-0"
 			"libiconv-2"
 			"libintl-8"
-			"libjpeg-8"
+			#"libjpeg-8"
 			"libpcre2-8-0"
-			"libpcre2-16-0"
 			"libpng16-16"
-			"libssp-0"
-			"libstdc++-6"
-			"libwinpthread-1"
-			"libzstd"
-			"zlib1"
 		)
-
-		if [[ "$_SYSTEM" == "MINGW64" ]]; then
-			deps+=("libgcc_s_seh-1")
-		elif [[ "$_SYSTEM" == "MINGW32" ]]; then
-			deps+=("libgcc_s_dw2-1")
-		fi
+		# modules: Core
+	elif [[ "$module" == "Widgets" ]]; then
+		# modules: Core,Gui
+	elif [[ "$module" == "PrintSupport" ]]; then
+		# modules: Core,Gui,Widgets
 	fi
 
 	for $dep in "${deps[@]}"; do
@@ -353,21 +409,7 @@ deploy_module () {
 
 		path="${basepath}/bin/$path"
 
-		if [[ ! -e "$path" ]]; then
-			error "$(printf "Error dependency file not found: %s\n" "$path")"
-
-			return 1
-		fi
-
-		local srcpath=$(path_source "$path")
-		local dstpath=$(path_target "$path")
-
-		copy_dependency "$srcpath" "$dstpath"
-
-		if [[ ! "$_VERBOSE" ]]; then
-			local relpath=$(relname "$dstpath")
-			echo "$relpath\n"
-		fi
+		recurse_dependency "$path"
 	done
 }
 
@@ -390,26 +432,49 @@ deploy_plugin () {
 	local srcpath=$(path_source "$path")
 	local dstpath=$(path_target "$path")
 
-	copy_dependency "$srcpath" "$dstpath"
+	local overwrite=false
 
-	if [[ ! "$_VERBOSE" ]]; then
-		local run=$(ls -1 "$srcpath")
-
-		if [[ -z "$run" ]]; then
-			return 0
-		fi
-
-		IFS=$'\n'
-		local files=$run
-
-		for filename in $run; do
-			filename=$(trim "$filename")
-			local path="${_DEST_DIR}/${filename}"
-
-			local relpath=$(relname "$path")
-			echo "$relpath\n"
-		done
+	if [[ "$_FORCE_OVERWRITE" == true || ! -e "$dstpath" ]]; then
+		overwrite=true
+	elif [[ "$_VERBOSE" == true ]]; then
+		local srcfilename=$(basename "$srcpath")
+		local dstfilename=$(relname "$dstpath")
+		printf "no overwrite: %s  already at: %s\n" "$srcfilename" "$dstfilename"
 	fi
+
+	if [[ "$overwrite" == true ]]; then
+		copy_dependency "$srcpath" "$dstpath"
+
+		if [[ ! "$_VERBOSE" ]]; then
+			local run=$(ls -1 "$srcpath")
+
+			if [[ -z "$run" ]]; then
+				return 0
+			fi
+
+			IFS=$'\n'
+			local files=$run
+
+			for filename in $run; do
+				filename=$(trim "$filename")
+				local path="${_DEST_DIR}/${filename}"
+
+				local relpath=$(relname "$path")
+				echo "$relpath\n"
+			done
+		fi
+	fi
+
+	local deps=()
+
+	for $dep in "${deps[@]}"; do
+		local basepath=$(lib_path)
+		local path="${dep}.dll"
+
+		path="${basepath}/bin/$path"
+
+		recurse_dependency "$path"
+	done
 }
 
 deploy_library () {
@@ -438,11 +503,26 @@ deploy_library () {
 		return 1
 	fi
 
-	copy_dependency "$srcpath" "$dstpath"
+	local srcpath=$(path_source "$path")
+	local dstpath=$(path_target "$path")
 
-	if [[ ! "$_VERBOSE" ]]; then
-		local relpath=$(relname "$dstpath")
-		echo "$relpath\n"
+	local overwrite=false
+
+	if [[ "$_FORCE_OVERWRITE" == true || ! -e "$dstpath" ]]; then
+		overwrite=true
+	elif [[ "$_VERBOSE" == true ]]; then
+		local srcfilename=$(basename "$srcpath")
+		local dstfilename=$(relname "$dstpath")
+		printf "no overwrite: %s  already at: %s\n" "$srcfilename" "$dstfilename"
+	fi
+
+	if [[ "$overwrite" == true ]]; then
+		copy_dependency "$srcpath" "$dstpath"
+
+		if [[ ! "$_VERBOSE" ]]; then
+			local relpath=$(relname "$dstpath")
+			echo "$relpath\n"
+		fi
 	fi
 }
 
