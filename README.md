@@ -30,9 +30,10 @@ By default it looks for Qt installed via *MSYS2* inside default paths or in cros
 | -np --no-deploy-plugins | Disallow plugins deploy |
 | -system | Set build system architecture \[MINGW64\] |
 | -qt-version | Set Qt version \[6\] |
-| -modules | Modules to deploy (Core Gui Widgets) |
-| -plugins | Plugins to deploy (platforms styles) |
+| -modules | Modules to deploy (Core,Gui,Widgets) |
+| -plugins | Plugins to deploy (platforms,styles) |
 | -libraries | Append libraries to deploy () |
+| -lib-path | Set build system lib path |
 | -qt-path | Set Qt path |
 | -framework-path | Set Qt framework path |
 | -plugins-path | Set Qt plugins path |

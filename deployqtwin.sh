@@ -25,6 +25,8 @@ _QT_VERSION=6
 _MODULES=("Core" "Gui" "Widgets")
 # private array _PLUGINS
 _PLUGINS=("platforms" "styles")
+# private string _LIB_PATH
+_LIB_PATH=""
 # private string _QT_PATH
 _QT_PATH=""
 # private string _FRAMEWORK_PATH
@@ -54,9 +56,10 @@ usage () {
 	printf "%s\n"   "-np --no-deploy-plugins   Disallow plugins deploy"
 	printf "%s\n"   "-system                   Set build system architecture [MINGW64]"
 	printf "%s\n"   "-qt-version               Set Qt version [6]"
-	printf "%s\n"   "-modules                  Modules to deploy (Core Gui Widgets)"
-	printf "%s\n"   "-plugins                  Plugins to deploy (platforms styles)"
+	printf "%s\n"   "-modules                  Modules to deploy (Core,Gui,Widgets)"
+	printf "%s\n"   "-plugins                  Plugins to deploy (platforms,styles)"
 	printf "%s\n"   "-libraries                Append libraries to deploy ()"
+	printf "%s\n"   "-lib-path                 Set build system lib path"
 	printf "%s\n"   "-qt-path                  Set Qt path"
 	printf "%s\n"   "-framework-path           Set Qt framework path"
 	printf "%s\n"   "-plugins-path             Set Qt plugins path"
@@ -178,6 +181,8 @@ lib_path () {
 			lib_path="/clang64"
 		elif [[ "$_SYSTEM" == "CLANG32" ]]; then
 			lib_path="/clang32"
+		elif [[ "$_SYSTEM" == "CLANGARM64" ]]; then
+			lib_path="/clangarm64"
 		fi
 	else
 		if [[ "$_SYSTEM" == "MINGW64" ]]; then
@@ -398,8 +403,10 @@ deploy_module () {
 		)
 		# modules: Core
 	elif [[ "$module" == "Widgets" ]]; then
+		deps=()
 		# modules: Core,Gui
 	elif [[ "$module" == "PrintSupport" ]]; then
+		deps=()
 		# modules: Core,Gui,Widgets
 	fi
 
@@ -647,17 +654,22 @@ for SRG in "$@"; do
 			shift
 			;;
 		-modules*)
-			_MODULES=("$2")
+			_MODULES=(${2//,/ })
 			shift
 			shift
 			;;
 		-plugins*)
-			_PLUGINS=("$2")
+			_PLUGINS=(${2//,/ })
 			shift
 			shift
 			;;
 		-libraries*)
-			_APPEND_LIBS=("$2")
+			_APPEND_LIBS=(${2//,/ })
+			shift
+			shift
+			;;
+		-lib-path*)
+			_LIB_PATH="$2"
 			shift
 			shift
 			;;
