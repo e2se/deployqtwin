@@ -586,12 +586,12 @@ deploy () {
 	fi
 
 	if [[
-		"$_SYSTEM" != "MINGW64" ||
-		"$_SYSTEM" != "MINGW32" ||
-		"$_SYSTEM" != "UCRT64" ||
-		"$_SYSTEM" != "CLANG64" ||
-		"$_SYSTEM" != "CLANG32" ||
-		"$_SYSTEM" != "CLANGARM64" ||
+		"$_SYSTEM" != "MINGW64" &&
+		"$_SYSTEM" != "MINGW32" &&
+		"$_SYSTEM" != "UCRT64" &&
+		"$_SYSTEM" != "CLANG64" &&
+		"$_SYSTEM" != "CLANG32" &&
+		"$_SYSTEM" != "CLANGARM64" &&
 		"$_SYSTEM" != "MSVC"
 	]]
 	then
