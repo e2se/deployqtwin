@@ -512,7 +512,7 @@ deploy_library () {
 		path="$library"
 	else
 		basepath=$(lib_path)
-		path="${basepath}/$library"
+		path="${basepath}/bin/$library"
 	fi
 
 	if [[ ! -e "$path" ]]; then
@@ -601,6 +601,7 @@ deploy () {
 		return 1
 	fi
 
+	qt_version
 	lib_path
 	qt_path
 	framework_path
