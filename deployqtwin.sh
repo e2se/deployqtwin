@@ -421,7 +421,7 @@ deploy_module () {
 		# requires: Core,Gui,Widgets
 	fi
 
-	for $dep in "${deps[@]}"; do
+	for dep in "${deps[@]}"; do
 		local basepath=$(lib_path)
 		local path="${dep}.dll"
 
@@ -485,7 +485,7 @@ deploy_plugin () {
 
 	local deps=()
 
-	for $dep in "${deps[@]}"; do
+	for dep in "${deps[@]}"; do
 		local basepath=$(lib_path)
 		local path="${dep}.dll"
 
