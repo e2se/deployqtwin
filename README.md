@@ -31,7 +31,7 @@ Allowed `-system` build system architecture values are: MINGW64 MINGW32 UCRT64 C
 | -o --dest-path | Set a destination path instead of binary directory |
 | -np --no-deploy-plugins | Disallow plugins deploy |
 | -system | Set build system architecture \[MINGW64\] |
-| -qt-version | Set Qt version \[6\] |
+| -qt-version | Set Qt version \[6.x.x\] |
 | -modules | Modules to deploy (Core,Gui,Widgets) |
 | -plugins | Plugins to deploy (platforms,styles) |
 | -libraries | Append libraries to deploy () |
