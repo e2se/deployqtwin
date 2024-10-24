@@ -2,8 +2,6 @@
 
 Finalize distributable as alternative to *windeployqt*.
 
-:construction: *alpha* :construction:
-
 The main difference with *windeployqt* is the absence of dependency resolver. Dependencies are listed within the script.
 
 > [!TIP]
@@ -12,9 +10,11 @@ The main difference with *windeployqt* is the absence of dependency resolver. De
 > [!IMPORTANT]
 > This script does not has key features of *windeployqt* distribuited with Qt, for example dependency resolver and deploy of qml, translations, etc. You should provide your own routine to deploy qml, translations, etc.
 
-By default it looks for Qt installed via *MSYS2* inside default paths or in cross-compiling way inside `/usr/x86_64-w64-mingw32` or `/usr/i686-w64-mingw32`
+By default it looks for Qt installed via *MSYS2* inside default paths.
 
-Allowed `-system` build system architecture values are: MINGW64 MINGW32 UCRT64 CLANG64 CLANG32 CLANGARM64 MSVC
+`-environment` system environment values are: MSYS
+
+`-system` system architecture values are: MINGW64, MINGW32, UCRT64, CLANG64, CLANG32, CLANGARM64, MSVC
 
 **It requires `bash` and a POSIX compliant sub-system**
 
@@ -30,12 +30,13 @@ Allowed `-system` build system architecture values are: MINGW64 MINGW32 UCRT64 C
 | -f --force | Force overwrite of files |
 | -o --dest-path | Set a destination path instead of binary directory |
 | -np --no-deploy-plugins | Disallow plugins deploy |
-| -system | Set build system architecture \[MINGW64\] |
+| -environment | Set system environment \[MSYS\] |
+| -system | Set system architecture \[MINGW64\] |
 | -qt-version | Set Qt version \[6.x.x\] |
 | -modules | Modules to deploy (Core,Gui,Widgets) |
 | -plugins | Plugins to deploy (platforms,styles) |
 | -libraries | Append libraries to deploy () |
-| -lib-path | Set build system lib path |
+| -lib-path | Set system environment lib path |
 | -qt-path | Set Qt path |
 | -framework-path | Set Qt framework path |
 | -plugins-path | Set Qt plugins path |
