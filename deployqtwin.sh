@@ -78,7 +78,7 @@ usage () {
 error () {
 	local msg="$1"
 
-	echo "$1" >&2
+	echo "$msg" >&2
 }
 
 is_msys () {
